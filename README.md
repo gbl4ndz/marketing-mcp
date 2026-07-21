@@ -23,11 +23,16 @@ approving the servers and supplying credentials).
   - Google Analytics Data API
 - A Google Ads **developer token** (Explorer access is enough for read-only
   querying): https://developers.google.com/google-ads/api/docs/get-started/dev-token
-- Credentials with the right scopes, either:
-  - Application Default Credentials — `gcloud auth application-default login`, or
-  - A service account JSON key with:
-    - `https://www.googleapis.com/auth/adwords`
-    - `https://www.googleapis.com/auth/analytics.readonly`
+- Credentials, either:
+  - Application Default Credentials — `gcloud auth application-default login`
+    with the `adwords` and `analytics.readonly` scopes, or
+  - **(Recommended for headless/server use)** A service account JSON key.
+    No scopes are set on the key itself — instead, grant the service
+    account's email access directly:
+    - **Google Ads**: Tools & Settings → Access and Security → Users → add
+      the service account email with Standard access.
+    - **Google Analytics**: Admin → Property Access Management → add the
+      service account email as Viewer, for each property you want to query.
 
 ## Setup
 
@@ -41,13 +46,19 @@ approving the servers and supplying credentials).
 3. Open this project in Claude Code. It will pick up `.mcp.json` and prompt
    you to approve the `google-ads-mcp` and `google-analytics-mcp` servers.
 4. Run `/mcp` inside Claude Code to confirm both servers are connected and
-   see the tools/resources they expose.
+   see the tools/resources they expose. If you edit `.env` after the
+   servers already connected, run `/mcp reconnect` to pick up the change.
 
 ## Notes
 
 - `.env` is gitignored — never commit real credentials.
+- `.mcp.json` doesn't use `${VAR}`-style substitution (that only expands
+  from Claude Code's own process environment, not from `.env`). Instead,
+  each server's `command` is a small `bash -c` wrapper that sources `.env`
+  from the project root before exec'ing the real server, so plain `.env`
+  edits take effect on next connect/reconnect.
 - The Google Ads server currently has no PyPI release, so it's installed
   straight from the GitHub repo via `pipx run --spec git+...`. The Analytics
   server is installed from PyPI (`analytics-mcp`).
-- If `pipx` isn't available, either server can also be run directly with
-  `uvx`/`pip` — swap the `command`/`args` in `.mcp.json` accordingly.
+- Google Ads MCP tools are namespaced by default, e.g.
+  `customers_list_accessible_customers`, not `list_accessible_customers`.

@@ -1,22 +1,12 @@
 {
   "mcpServers": {
     "google-ads-mcp": {
-      "command": "pipx",
-      "args": ["run", "--spec", "git+https://github.com/googleads/google-ads-mcp.git", "google-ads-mcp"],
-      "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}",
-        "GOOGLE_PROJECT_ID": "${GOOGLE_PROJECT_ID}",
-        "GOOGLE_ADS_DEVELOPER_TOKEN": "${GOOGLE_ADS_DEVELOPER_TOKEN}",
-        "GOOGLE_ADS_LOGIN_CUSTOMER_ID": "${GOOGLE_ADS_LOGIN_CUSTOMER_ID}"
-      }
+      "command": "bash",
+      "args": ["-c", "set -a; [ -f .env ] && . ./.env; set +a; exec pipx run --spec git+https://github.com/googleads/google-ads-mcp.git google-ads-mcp"]
     },
     "google-analytics-mcp": {
-      "command": "pipx",
-      "args": ["run", "analytics-mcp"],
-      "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}",
-        "GOOGLE_PROJECT_ID": "${GOOGLE_PROJECT_ID}"
-      }
+      "command": "bash",
+      "args": ["-c", "set -a; [ -f .env ] && . ./.env; set +a; exec pipx run analytics-mcp"]
     }
   }
 }
